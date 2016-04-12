@@ -4,6 +4,11 @@ from hardware import Curtain, LDR, cleanup
 
 def main():
     print "Running"
+    # check time
+
+    # check light
+
+    # check firebase
 
 if __name__ == "__main__":
     print "J.A.R.V.I.S. Activated"
