@@ -18,6 +18,7 @@ class Curtain():
     def setservo( s, duty=50, mid=7.9, high=9.3, low=6.7 ):
         s.duty = duty
         s.dc = ( mid, high, low )
+        s.engaged = False
 
     def initencoder( s, pins ):
         s.setencoder()
@@ -27,7 +28,7 @@ class Curtain():
         for p in pins:
             GPIO.add_event_detect( p, GPIO.BOTH, callback=s.encoder_interrupt )
 
-    def setencoder( s, limits=(0,50) ):
+    def setencoder( s, limits=(0,500) ):
         s.penc = 0
         s.pos = 0
         s.limits = limits
@@ -41,19 +42,31 @@ class Curtain():
         return s.limits[0] + float(s.pos)/( s.limits[1] - s.limits[0] )
 
     def engage( s ):
-        s.pwm.start( s.dc[0] )
+        if not s.engaged:
+            s.pwm.start( s.dc[0] )
+        s.engaged = True
 
     def disengage( s ):
-        s.pwm.stop()
+        if s.engaged:
+            s.pwm.stop()
+        s.engaged = False
 
     def move( s, speed ):
         s.engage()
         if speed:
             scale = s.dc[ 1 if speed > 0.0 else -1 ] - s.dc[0]
-            s.pwm.ChangeDutyCycle( s.dc[0] + scale*min( 1.0, abs(speed) ) )
+        else:
+            scale = 0
+        s.pwm.ChangeDutyCycle( s.dc[0] + scale*min( 1.0, abs(speed) ) )
 
-    def stop( s ):
-        s.move(0)
+    def stop( s, coast=False ):
+        if coast:
+            s.move(0)
+        else:
+            s.disengage()
+
+    def goto( s, pos ):
+        pass
 
 def LDR():
     pass
