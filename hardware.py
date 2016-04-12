@@ -68,8 +68,19 @@ class Curtain():
     def goto( s, pos ):
         pass
 
-def LDR():
-    pass
+class Environment():
+
+    def __init__( s, dhtfile="DHT11" ):
+        s.dhtfile = dhtfile
+
+    def read( s ):
+        readings = {}
+        with open( s.dhtfile ) as f:
+            dht = f.read().split()
+        readings['humidity'] = float(dht[0])
+        readings['temperature'] = float(dht[1])
+
+        return readings
 
 if __name__ == "__main__":
     from time import sleep
