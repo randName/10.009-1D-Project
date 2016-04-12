@@ -1,5 +1,8 @@
 import RPi.GPIO as GPIO
 
+def cleanup():
+    GPIO.cleanup()
+
 class Curtain():
 
     def __init__( s, pin=18, duty=100, mid=50, high=100, low=0 ):
@@ -26,6 +29,9 @@ class Curtain():
 
     def position( s ):
         pass
+
+def LDR():
+    pass
 
 if __name__ == "__main__":
     c = Curtain()
