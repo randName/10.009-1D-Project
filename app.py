@@ -9,15 +9,32 @@ token = 'X0K8MoP5F55Q6S4lVKnf51piKE5HDttfAT1SlCpW'
 
 def main():
     print "Running"
+    
     #check time
     currentTime = str(datetime.now().time).split(':')
     if currentTime[0] == '08':
-        # call the function to roll up the blind
+        # if LDR > threshold1:
+            # call the function to roll up the blind
+        #else:
+            # on the light switch
         
     elif currentTime[0] == '22':
         # call the function to roll down the blind
         
     else: # check for input in firebase
+        # if there is user interference ON:
+            # user interference suite
+            # run the desired command from the firebase
+        #else:
+            # auto regulation suite
+            
+            # if LDR > threshold2 && LDR < threshold3:
+                # roll the curtain down halfway
+            # elif LDR > threshold3:
+                # roll the curtain down fully
+            # else:
+                # roll the curtain back up
+            
     
     
 
