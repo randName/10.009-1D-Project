@@ -1,14 +1,29 @@
 import time
-
 from hardware import Curtain, LDR, cleanup
+
+from datetime import datetime
+import firebase
+
+url = 'https://melatoninese.firebaseio.com/'
+token = 'X0K8MoP5F55Q6S4lVKnf51piKE5HDttfAT1SlCpW'
 
 def main():
     print "Running"
-    # check time
+    #check time
+    currentTime = str(datetime.now().time).split(':')
+    if currentTime[0] == '08':
+        # call the function to roll up the blind
+        
+    elif currentTime[0] == '22':
+        # call the function to roll down the blind
+        
+    else: # check for input in firebase
+    
+    
 
-    # check light
+    
 
-    # check firebase
+
 
 if __name__ == "__main__":
     print "J.A.R.V.I.S. Activated"
