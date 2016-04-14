@@ -1,3 +1,4 @@
+from time import sleep
 import RPi.GPIO as GPIO
 GPIO.setmode( GPIO.BCM )
 
@@ -68,16 +69,48 @@ class Curtain():
     def goto( s, pos ):
         pass
 
-def LDR():
-    pass
+class Environment():
+
+    def __init__( s, ldrpin=12, ldrscale=2500.0, dhtfile="DHT11" ):
+        s.ldrpin = ldrpin
+        s.ldrscale = ldrscale
+        s.dhtfile = dhtfile
+
+    def dht11( s ):
+        with open( s.dhtfile ) as f:
+            dht = f.read().split()
+        # temperature, humidity
+        return float(dht[1]), float(dht[0])
+
+    def ldr( s, raw=False ):
+        GPIO.setup( s.ldrpin, GPIO.OUT )
+        GPIO.output( s.ldrpin, GPIO.LOW )
+        sleep(0.1)
+        GPIO.setup( s.ldrpin, GPIO.IN )
+        reading = 0
+        while GPIO.input( s.ldrpin ) == GPIO.LOW:
+            reading += 1
+        if raw:
+            return reading
+        else:
+            return max( 0.0, (s.ldrscale-reading)/s.ldrscale )
+
+    def read( s ):
+        readings = {}
+        temp, hum = s.dht11()
+        readings['temperature'] = temp
+        readings['humidity'] = hum
+        readings['light'] = s.ldr()
+        return readings
 
 if __name__ == "__main__":
-    from time import sleep
     try:
         c = Curtain()
+        e = Environment()
         while True:
             sleep(0.1)
-            print c.position()
+            # print c.position()
+            print e.read()
     except KeyboardInterrupt:
         pass
     finally:
