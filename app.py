@@ -7,6 +7,9 @@ import firebase
 url = 'https://melatoninese.firebaseio.com/'
 token = 'X0K8MoP5F55Q6S4lVKnf51piKE5HDttfAT1SlCpW'
 
+fireBase = firebase.FirebaseApplication(url,token)
+
+
 def main():
     print "Running"
     
@@ -21,10 +24,23 @@ def main():
     elif currentTime[0] == '22':
         # call the function to roll down the blind
         
-    else: # check for input in firebase
-        # if there is user interference ON:
-            # user interference suite
-            # run the desired command from the firebase
+    else: 
+        userControl = fireBase.get('/1D')
+        if userControl['control']['manual'] == 'ON':
+
+            # user curtain perefence
+            if userControl['control']['curtain position'] == 0:
+                #roll up the curtain
+            else:
+                # roll down the curtain
+
+            # user table lamp pereference
+            if userControl['control']['table lamp'] == 0:
+                # off the table light
+            else:
+                # on the table light
+
+            
         #else:
             # auto regulation suite
             
