@@ -21,7 +21,7 @@ if __name__ == "__main__":
     @run_interval( 10 )
     def remote_check():
         print "Getting data from remote... ",
-        remote.fetch()
+        remote.update()
         print "Done"
 
     @run_interval( 30 )

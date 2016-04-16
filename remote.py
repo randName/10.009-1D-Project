@@ -10,7 +10,7 @@ class Remote():
         s.conn = FirebaseApplication( *cred )
         s.basenode = basenode
 
-    def fetch( s ):
+    def update( s ):
         rem = s.conn.get( s.basenode )
         s.data = zip( rem['manual'], rem['scheduler'] )
         s.alarm = rem.get('alarm')
@@ -35,5 +35,5 @@ class Remote():
 
 if __name__ == "__main__":
     r = Remote( 'firebase.txt' )
-    r.fetch()
+    r.update()
     print r.getcommand()
