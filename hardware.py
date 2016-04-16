@@ -71,7 +71,7 @@ class Curtain():
 
 class Environment():
 
-    def __init__( s, ldrpin=12, ldrscale=2500.0, dhtfile="DHT11" ):
+    def __init__( s, ldrpin=27, ldrscale=6000.0, dhtfile="DHT11" ):
         s.ldrpin = ldrpin
         s.ldrscale = ldrscale
         s.dhtfile = dhtfile
@@ -88,7 +88,7 @@ class Environment():
         sleep(0.1)
         GPIO.setup( s.ldrpin, GPIO.IN )
         reading = 0
-        while GPIO.input( s.ldrpin ) == GPIO.LOW:
+        while reading < s.ldrscale and GPIO.input( s.ldrpin ) == GPIO.LOW:
             reading += 1
         if raw:
             return reading
@@ -98,6 +98,9 @@ class Environment():
     def update( s ):
         s.temperature, s.humidity = s.dht11()
         s.light = s.ldr()
+
+    def __repr__( s ):
+        return "l: %.2f, t: %.2f, h: %.2f" % ( s.light, s.temperature, s.humidity )
 
 if __name__ == "__main__":
     try:

@@ -1,7 +1,7 @@
 import Adafruit_DHT
 from time import sleep
 
-pin = '5'
+pin = '22'
 logfile = 'DHT11'
 
 try:
