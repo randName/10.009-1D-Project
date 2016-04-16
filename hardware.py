@@ -95,13 +95,9 @@ class Environment():
         else:
             return max( 0.0, (s.ldrscale-reading)/s.ldrscale )
 
-    def read( s ):
-        readings = {}
-        temp, hum = s.dht11()
-        readings['temperature'] = temp
-        readings['humidity'] = hum
-        readings['light'] = s.ldr()
-        return readings
+    def update( s ):
+        s.temperature, s.humidity = s.dht11()
+        s.light = s.ldr()
 
 if __name__ == "__main__":
     try:
@@ -110,7 +106,7 @@ if __name__ == "__main__":
         while True:
             sleep(0.1)
             # print c.position()
-            print e.read()
+            e.update()
     except KeyboardInterrupt:
         pass
     finally:

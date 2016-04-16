@@ -12,17 +12,52 @@ def run_interval( interval ):
         return func_wrapper
     return interval_decorator
 
+def set_hwclock():
+    try:
+        from os import uname, system
+        from urllib2 import urlopen
+        timesrc='http://www.timeapi.org/+8/now/'
+        tm = urlopen( timesrc ).read()
+        system( 'date -s %s' % tm )
+    except ImportError:
+        pass
+
 if __name__ == "__main__":
-    print "J.A.R.V.I.S. Activated"
 
     curtain = Curtain()
     env = Environment()
     remote = Remote( 'firebase.txt' )
 
+    @run_interval( 10 )
+    def remote_check():
+        print "Getting data from remote... ",
+        remote.fetch()
+        print "Done"
+
+    @run_interval( 30 )
+    def env_check():
+        print "Getting data from environment... ",
+        env.update()
+        print "Done"
+
+    def main():
+        cmd = remote.getcommand()
+
+        if cmd[0] is not None:
+            curtain.goto( cmd[0] )
+
+        # env.light
+        # env.temperature
+
+    set_hwclock()
+
+    print "J.A.R.V.I.S. Activated"
     try:
         while True:
-            # remote_check()
-            # env_check()
+            remote_check()
+            env_check()
+            main()
+            curtain.update()
     except KeyboardInterrupt:
         print "J.A.R.V.I.S. Deactivated"
     finally:
