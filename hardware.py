@@ -7,16 +7,17 @@ def cleanup():
 
 class Curtain():
 
-    def __init__( s, servo=18, encoder=(23,24) ):
+    def __init__( s, servo=18, encoder=(14,15) ):
         s.initservo( servo )
         s.initencoder( encoder )
+        s.target = None
 
     def initservo( s, pin ):
         s.setservo()
         GPIO.setup( pin, GPIO.OUT )
         s.pwm = GPIO.PWM( pin, s.duty )
 
-    def setservo( s, duty=50, mid=7.9, high=9.3, low=6.7 ):
+    def setservo( s, duty=50, mid=8.0, high=9.0, low=6.5 ):
         s.duty = duty
         s.dc = ( mid, high, low )
         s.engaged = False
@@ -53,21 +54,24 @@ class Curtain():
         s.engaged = False
 
     def move( s, speed ):
-        s.engage()
         if speed:
             scale = s.dc[ 1 if speed > 0.0 else -1 ] - s.dc[0]
         else:
             scale = 0
         s.pwm.ChangeDutyCycle( s.dc[0] + scale*min( 1.0, abs(speed) ) )
 
-    def stop( s, coast=False ):
-        if coast:
+    def update( s ):
+        if s.target is None:
+            return
+        diff = s.target - s.position()
+        if abs( diff ) < 0.1:
             s.move(0)
+            s.target = None
         else:
-            s.disengage()
+            s.move( cmp( diff, 0 ) )
 
     def goto( s, pos ):
-        pass
+        s.target = max( 0.0, min( 1.0, pos ) )
 
 class Environment():
 
