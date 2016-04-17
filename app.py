@@ -18,29 +18,48 @@ if __name__ == "__main__":
     env = Environment()
     remote = Remote( 'firebase.txt' )
 
+    curtain.engage()
+
     @run_interval( 10 )
     def remote_check():
         print "Getting data from remote... ",
         remote.update()
         print "Done"
 
-    @run_interval( 30 )
+    @run_interval( 20 )
     def env_check():
         print "Getting data from environment... ",
         env.update()
         print "Done"
 
     def main():
-        cmd = remote.getcommand()
+        cmd = remote.getcommand()[0]
 
-        if cmd[0] is not None:
-            curtain.goto( cmd[0] )
+        if cmd is None or cmd == lastcmd:
+            return
 
-        # env.light
-        # env.temperature
+        try:
+            curtain.goto( float( cmd ) )
+            lastcmd = cmd
+            return
+        except ValueError:
+            pass
+
+        if cmd == "auto":
+            if env.light > 0.8 or env.temperature > 30:
+                curtain.goto( 0.9 )
+            elif env.light < 0.4 and env.temperature < 30:
+                curtain.goto( 0.1 )
+        elif cmd == "wake":
+            curtain.goto( 0.1 )
+        elif cmd == "sleep":
+            curtain.goto( 0.9 )
+
+        lastcmd = cmd
 
     print "J.A.R.V.I.S. Activated"
     try:
+        lastcmd = None
         while True:
             remote_check()
             env_check()

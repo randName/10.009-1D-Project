@@ -13,7 +13,6 @@ class Remote():
     def update( s ):
         rem = s.conn.get( s.basenode )
         s.data = zip( rem['manual'], rem['scheduler'] )
-        s.alarm = rem.get('alarm')
 
     def activate( s, tm, threshold=300 ):
         td = tm - s.now

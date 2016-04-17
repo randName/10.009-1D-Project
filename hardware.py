@@ -17,7 +17,7 @@ class Curtain():
         GPIO.setup( pin, GPIO.OUT )
         s.pwm = GPIO.PWM( pin, s.duty )
 
-    def setservo( s, duty=50, mid=8.0, high=9.0, low=6.5 ):
+    def setservo( s, duty=50, mid=7.9, high=9.0, low=6.5 ):
         s.duty = duty
         s.dc = ( mid, high, low )
         s.engaged = False
