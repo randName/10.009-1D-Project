@@ -1,6 +1,6 @@
 import time
 from remote import Remote
-from hardware import Curtain, Environment, cleanup
+from hardware import Curtain, Light, Environment, cleanup
 
 def run_interval( interval ):
     def interval_decorator( func ):
@@ -15,6 +15,7 @@ def run_interval( interval ):
 if __name__ == "__main__":
 
     curtain = Curtain()
+    light = Light()
     env = Environment()
     remote = Remote( 'firebase.txt' )
 
@@ -32,15 +33,10 @@ if __name__ == "__main__":
         env.update()
         print "Done"
 
-    def main():
-        cmd = remote.getcommand()[0]
-
-        if cmd is None or cmd == lastcmd:
-            return
-
+    def main( cmd ):
+        print cmd
         try:
             curtain.goto( float( cmd ) )
-            lastcmd = cmd
             return
         except ValueError:
             pass
@@ -55,15 +51,16 @@ if __name__ == "__main__":
         elif cmd == "sleep":
             curtain.goto( 0.9 )
 
-        lastcmd = cmd
-
     print "J.A.R.V.I.S. Activated"
     try:
         lastcmd = None
         while True:
-            remote_check()
             env_check()
-            main()
+            remote_check()
+            cmd = remote.getcommand()[0]
+            if cmd is not None and cmd != lastcmd:
+                main( cmd )
+                lastcmd = cmd
             curtain.update()
     except KeyboardInterrupt:
         print "J.A.R.V.I.S. Deactivated"
