@@ -10,6 +10,10 @@ class Curtain():
     def __init__( s, servo=18, encoder=(14,15) ):
         s.initservo( servo )
         s.initencoder( encoder )
+        s.setdir()
+
+    def setdir( s, closedir=1 ):
+        s.closedir = closedir
         s.target = None
 
     def initservo( s, pin ):
@@ -71,7 +75,25 @@ class Curtain():
             s.move( cmp( diff, 0 ) )
 
     def goto( s, pos ):
-        s.target = max( 0.0, min( 1.0, pos ) )
+        s.target = s.closedir*max( 0.0, min( 1.0, pos ) )
+
+class Light():
+
+    def __init__( s, servo=23 ):
+        s.initservo( servo )
+
+    def initservo( s, pin ):
+        s.setservo()
+        GPIO.setup( pin, GPIO.OUT )
+        s.pwm = GPIO.PWM( pin, s.duty )
+        s.pwm.start( s.dc[0] )
+
+    def setservo( s, duty=50, mid=7.3, high=5.7, low=8.5 ):
+        s.duty = duty
+        s.dc = ( mid, high, low )
+
+    def move( s, m ):
+        s.pwm.ChangeDutyCycle( s.dc[m] )
 
 class Environment():
 
@@ -109,6 +131,7 @@ class Environment():
 if __name__ == "__main__":
     try:
         c = Curtain()
+        l = Light()
         e = Environment()
         while True:
             sleep(0.1)
