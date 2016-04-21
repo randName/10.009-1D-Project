@@ -5,9 +5,9 @@ from hardware import Curtain, Light, Environment, cleanup
 def run_interval( interval ):
     def interval_decorator( func ):
         last_run = [0.0]
-        def func_wrapper():
+        def func_wrapper( *args ):
             if time.time() - last_run[0] > interval:
-                func()
+                func( *args )
                 last_run[0] = time.time()
         return func_wrapper
     return interval_decorator
@@ -19,6 +19,8 @@ if __name__ == "__main__":
     env = Environment()
     remote = Remote( 'firebase.txt' )
 
+    curtain.setencoder( limits=(0,50) )
+
     curtain.engage()
 
     @run_interval( 10 )
@@ -27,40 +29,44 @@ if __name__ == "__main__":
         remote.update()
         print "Done"
 
-    @run_interval( 20 )
+    @run_interval( 5 )
     def env_check():
         print "Getting data from environment... ",
         env.update()
+        print env
         print "Done"
 
-    def main( cmd ):
+    @run_interval( 10 )
+    def presets( cmd ):
         print cmd
-        try:
-            curtain.goto( float( cmd ) )
-            return
-        except ValueError:
-            pass
-
-        if cmd == "auto":
+        if cmd == "Auto":
             if env.light > 0.8 or env.temperature > 30:
                 curtain.goto( 0.9 )
             elif env.light < 0.4 and env.temperature < 30:
                 curtain.goto( 0.1 )
-        elif cmd == "wake":
+        elif cmd == "Wake":
             curtain.goto( 0.1 )
-        elif cmd == "sleep":
+            if env.light < 0.4:
+                light.goto(1)
+        elif cmd == "Sleep":
             curtain.goto( 0.9 )
+            if env.light > 0.8:
+                light.goto(0)
 
     print "J.A.R.V.I.S. Activated"
     try:
-        lastcmd = None
+        lastcmd = "Auto"
         while True:
             env_check()
             remote_check()
             cmd = remote.getcommand()[0]
             if cmd is not None and cmd != lastcmd:
-                main( cmd )
+                try:
+                    curtain.goto( float( cmd ) )
+                except ValueError:
+                    pass
                 lastcmd = cmd
+            presets( lastcmd )
             curtain.update()
     except KeyboardInterrupt:
         print "J.A.R.V.I.S. Deactivated"

@@ -95,6 +95,9 @@ class Light():
     def move( s, m ):
         s.pwm.ChangeDutyCycle( s.dc[m] )
 
+    def goto( s, target ):
+        s.move( -1 if target < 0.5 else 1 )
+
 class Environment():
 
     def __init__( s, ldrpin=27, ldrscale=6000.0, dhtfile="DHT11" ):
